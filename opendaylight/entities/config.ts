@@ -1,5 +1,5 @@
 export interface ConfigController {
-  ip: string;
+  host: string;
   port: number;
   username: string;
   password: string;
