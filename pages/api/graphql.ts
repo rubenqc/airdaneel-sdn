@@ -1,4 +1,7 @@
-import { ApolloServer, gql } from 'apollo-server-micro'
+import {ApolloServer, gql} from 'apollo-server-micro'
+import {ApolloServerPluginLandingPageDisabled, ApolloServerPluginLandingPageGraphQLPlayground} from 'apollo-server-core'
+import {MicroRequest} from "apollo-server-micro/dist/types";
+import {ServerResponse} from "http";
 
 const typeDefs = gql`
     type Query {
@@ -11,8 +14,8 @@ const typeDefs = gql`
     }
 `
 const users = [
-    { name: 'Leeroy Jenkins', username: 'leeroy' },
-    { name: 'Foo Bar', username: 'foobar' },
+    {name: 'Leeroy Jenkins', username: 'leeroy'},
+    {name: 'Foo Bar', username: 'foobar'},
 ]
 
 const resolvers = {
@@ -32,11 +35,15 @@ export const config = {
     },
 }
 
-const apolloServer = new ApolloServer({ typeDefs, resolvers })
+const apolloServer = new ApolloServer({
+    typeDefs, resolvers, plugins: [
+        process.env.NODE_ENV === 'production' ? ApolloServerPluginLandingPageDisabled : ApolloServerPluginLandingPageGraphQLPlayground
+    ]
+})
 
 const startServer = apolloServer.start()
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: MicroRequest, res: ServerResponse) {
     await startServer
     await apolloServer.createHandler({
         path: '/api/graphql',
