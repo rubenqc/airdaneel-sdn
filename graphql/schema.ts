@@ -1,12 +1,14 @@
-import {gql} from "apollo-server-micro";
+import { gql } from 'apollo-server-micro';
 
 export const typeDefs = gql`
-    type Query {
-        users: [User!]!
-        user(username: String): User
-    }
-    type User {
-        name: String
-        username: String
-    }
-`
+  type TerminationPoint {
+    tpId: String
+  }
+  type Node {
+    nodeId: String
+    ports: [TerminationPoint]
+  }
+  type Query {
+    getNodes: [Node]
+  }
+`;

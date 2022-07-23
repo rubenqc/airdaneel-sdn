@@ -4,15 +4,26 @@ import { ConfigController } from './entities/config';
 import { NodeEntity } from './entities/node';
 import { NetworkTopology } from './entities/opendaylight/network-topology';
 
-export class OpenDaylightController {
-  uri: string;
+export class OpenDaylight {
+  private readonly uri: string;
+  private readonly credentials: string;
 
   constructor(initialConfig: ConfigController) {
-    this.uri = `http${initialConfig.https ? 's' : ''}://${initialConfig.ip}:${initialConfig.port}`;
+    this.uri = `http${initialConfig.https ? 's' : ''}://${initialConfig.host}:${
+      initialConfig.port
+    }`;
+
+    let buff = new Buffer(initialConfig.username + ':' + initialConfig.password);
+    this.credentials = buff.toString('base64');
   }
 
-  async fetchController(path: string): Promise<any> {
-    const res = await fetch(`${this.uri}${path}`);
+  async fetchController(path: string, method: string = 'GET'): Promise<any> {
+    let headers = new Headers();
+    headers.set('Authorization', 'Basic ' + this.credentials);
+    const res = await fetch(`${this.uri}${path}`, {
+      method,
+      headers,
+    });
     return res.json();
   }
 
