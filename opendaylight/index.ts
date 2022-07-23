@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 import { ConfigController } from './entities/config';
-import { NodeEntity } from './entities/node';
+import { NodeEntity, Link, Topology } from './entities/topology';
 import { NetworkTopology } from './entities/opendaylight/network-topology';
 
 export class OpenDaylight {
@@ -27,7 +27,7 @@ export class OpenDaylight {
     return res.json();
   }
 
-  async getNodes(): Promise<NodeEntity[]> {
+  async getTopology(): Promise<Topology> {
     const data: NetworkTopology = await this.fetchController(
       '/restconf/operational/network-topology:network-topology',
     );
@@ -38,13 +38,32 @@ export class OpenDaylight {
       },
     } = data;
 
-    return firstTopology.node.map(
+    const nodes = firstTopology.node.map(
       (n): NodeEntity => ({
         nodeId: n['node-id'],
         ports: n['termination-point'].map((t) => ({
-          tpId: t['tp-id'],
+          portId: t['tp-id'],
         })),
       }),
     );
+
+    const links = firstTopology.link.map(
+      (l): Link => ({
+        linkId: l['link-id'],
+        src: {
+          node: l.source['source-node'],
+          port: l.source['source-tp'],
+        },
+        dst: {
+          node: l.destination['dest-node'],
+          port: l.destination['dest-tp'],
+        },
+      }),
+    );
+
+    return {
+      nodes,
+      links,
+    };
   }
 }
