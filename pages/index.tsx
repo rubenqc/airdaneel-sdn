@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { Button, TextInput, Grid, NumberInput, Column } from 'carbon-components-react';
+import { Button } from 'carbon-components-react';
 
 import HeadNext from '../components/Head/Head';
 import Header from '../components/Header/Header';
