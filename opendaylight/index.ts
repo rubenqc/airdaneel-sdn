@@ -38,7 +38,7 @@ export class OpenDaylight {
       },
     } = data;
 
-    const nodes = firstTopology.node.map(
+    const nodes = (firstTopology.node || []).map(
       (n): NodeEntity => ({
         nodeId: n['node-id'],
         ports: n['termination-point'].map((t) => ({
@@ -47,7 +47,7 @@ export class OpenDaylight {
       }),
     );
 
-    const links = firstTopology.link.map(
+    const links = (firstTopology.link || []).map(
       (l): Link => ({
         linkId: l['link-id'],
         src: {
