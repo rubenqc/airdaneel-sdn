@@ -22,7 +22,7 @@ const Layout = ({children}) => {
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link href="/register">
+                                <Link href="/register_test">
                                 <a className="nav-link active" aria-current="page">Register</a>
                                     </Link>
                             </li>

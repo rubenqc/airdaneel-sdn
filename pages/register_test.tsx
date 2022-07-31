@@ -2,7 +2,7 @@ import React, {SyntheticEvent, useState} from 'react';
 import Layout from "../layouts/Layout";
 import {useRouter} from "next/router";
 
-const Register = () => {
+const Register_test = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -45,4 +45,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Register_test;
