@@ -52,7 +52,7 @@ const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         return res.status(400).json({message:'No existe usuario con ese id'})
     }
 
-    const {_id, email} = user;
+    const {_id, email, role, name} = user;
 
     return res.status(200).json ({
         token,  //jwt
