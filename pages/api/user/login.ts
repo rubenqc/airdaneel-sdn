@@ -37,19 +37,19 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     await db.disconnect();
 
     if( !user ) {
-        return res.status(400).json({message:'Correo o constraseña no validos - EMAIL'})
+        return res.status(400).json({message:'Correo o contraseña no validos - EMAIL'})
     }
 
     if( !(bcrypt.compareSync(password, user.password! ))){
-        return res.status(400).json({message:`Correo o constraseña no validos - Password`})
+        return res.status(400).json({message:`Correo o contraseña no validos - Password`})
     }
 
-    const {role, name, _id} = user;
+    const {_id, email, role, name} = user;
 
     const token: string = jwt.signToken(_id, email);
 
     return res.status(200).json ({
-        token,  //jwt
+        token: jwt.signToken(_id, email),
         user: {
             email, role, name
         }
