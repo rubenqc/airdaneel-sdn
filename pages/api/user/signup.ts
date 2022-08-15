@@ -1,8 +1,9 @@
 import type {NextApiRequest, NextApiResponse} from "next";
 import bcrypt from 'bcryptjs';
-import {db } from "../../../database";
-import {User} from '../../../models';
+//import {db } from "../../../database";
 import {jwt,validations} from "../../../utils";
+import {connection} from "../../../database/connection-db";
+import {User} from "../../../entities/User";
 
 
 
@@ -31,7 +32,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 }
 
 const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    const{email = '', password = '',name= ''} = req.body as {email: string, password: string, name: string};
+    const{email, password,name} = req.body as {email: string, password: string, name: string};
 
     if (password.length < 6) {
 
@@ -48,12 +49,13 @@ const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => 
 
     if(!validations.isValidEmail(email)) {
         return res.status(400).json({
-            message: 'Ingrese una direccion de correo valida'
+            message: 'Ingrese una dirección de correo valida'
         })
     }
 
-    await db.connect();
-    const user = await User.findOne({email});
+
+    await connection.initialize();
+    const user = await User.findOneBy({email});
 
     if ( user) {
         return res.status(400).json(({
@@ -61,15 +63,15 @@ const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => 
         }))
     }
 
-    const newUser = new User({
-        email: email.toLowerCase(),
-        password: bcrypt.hashSync(password),
-        role: 'client',
-        name,
-    });
+    const newUser = new User();
+
+    newUser.email = email.toLowerCase();
+    newUser.password = bcrypt.hashSync(password);
+    newUser.role = 'client';
+    newUser.name = name;
 
     try {
-        await newUser.save({validateBeforeSave: true});
+        await newUser.save();
 
     } catch (error) {
         console.log(error);
@@ -78,6 +80,7 @@ const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => 
         })
     }
 
+    await connection.destroy();
 
     const {_id, role} = newUser;
 

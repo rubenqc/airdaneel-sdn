@@ -1,8 +1,8 @@
 import type {NextApiRequest, NextApiResponse} from "next";
-import bcrypt from 'bcryptjs';
-import {db } from "../../../database";
-import {User} from "../../../models";
+//import bcrypt from 'bcryptjs';
+import {User} from "../../../entities/User";
 import {jwt} from "../../../utils";
+import {connection} from "../../../database/connection-db";
 
 
 type Data =
@@ -32,27 +32,29 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     const{token = ''} = req.cookies;
 
-    let userId = '';
+    let _id = '';
 
     try {
-        userId = await jwt.isValidToken(token);
+        _id = await jwt.isValidToken(token);
+       // return res.status(200).json({message: userId})
+
     } catch (error){
         return res.status(401).json({
             message: 'Token de autorización no es válido'
         })
     }
 
-    await db.connect();
+    await connection.initialize()
 
-    const user = await User.findById(userId).lean();
+    const user = await User.findOneBy({_id})
 
-    await db.disconnect();
+    await connection.destroy()
 
     if( !user ) {
         return res.status(400).json({message:'No existe usuario con ese id'})
     }
 
-    const {_id, email, role, name} = user;
+    const { email, role, name} = user;
 
     return res.status(200).json ({
         token,  //jwt
@@ -60,8 +62,6 @@ const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
             email, role, name
         }
     })
-
-
 
 }
 

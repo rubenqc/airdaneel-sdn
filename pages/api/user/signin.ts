@@ -1,19 +1,19 @@
 import type {NextApiRequest, NextApiResponse} from "next";
+import "reflect-metadata"
 import bcrypt from 'bcryptjs';
-import {db } from "../../../database";
-import {User} from "../../../models";
+import {User} from "../../../entities/User";
 import {jwt} from "../../../utils";
-
+import {connection} from "../../../database/connection-db";
 
 type Data =
     | {message: string}
     | {
-        token: string;
-        user: {
-            email: string;
-            name: string;
-            role: string;
-        }
+    token: string;
+    user: {
+        email: string;
+        name: string;
+        role: string;
+    }
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -30,26 +30,26 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 }
 
 const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    const{email = '', password = ''} = req.body;
+    const {email = '', password = ''} = req.body;
 
-    await db.connect();
-    const user = await User.findOne({email});
-    await db.disconnect();
+    await connection.initialize();
+    const user = await User.findOneBy({email});
+    await connection.destroy();
 
-    if( !user ) {
-        return res.status(400).json({message:'Correo o contraseña no validos - EMAIL'})
+    if(!user) {
+        return res.status(400).json({message:'Correo o constraseña no validos - EMAIL'})
     }
 
-    if( !(bcrypt.compareSync(password, user.password! ))){
-        return res.status(400).json({message:`Correo o contraseña no validos - Password`})
+    if(!bcrypt.compareSync(password, user.password)){
+        return res.status(400).json({message:'Correo o constraseña no validos - PASSWORD'})
     }
 
     const {_id, role, name} = user;
 
     const token: string = jwt.signToken(_id, email);
 
-    return res.status(200).json ({
-        token: jwt.signToken(_id, email),
+    return res.status(200).json({
+        token,
         user: {
             email, role, name
         }
@@ -57,5 +57,5 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
 
 
-}
 
+}
