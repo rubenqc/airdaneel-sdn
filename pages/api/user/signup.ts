@@ -34,10 +34,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     const{email, password,name} = req.body as {email: string, password: string, name: string};
 
-    if (password.length < 6) {
-
+    if (!validations.isValidPassword(password)) {
         return res.status(400).json({
-            message: 'La contraseña debe ser de 6 caracteres'
+            message: 'La contraseña debe ser de 6 caracteres y contener al menos un numero'
         });
     }
     if (name.length < 2) {

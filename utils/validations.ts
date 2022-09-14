@@ -14,3 +14,10 @@ export const isEmail = (email: string): string | undefined => {
         ? undefined
         : 'El correo no parece ser válido';
 }
+
+export const isValidPassword = (password: string): boolean => {
+    const validLength: boolean = password.length >= 6;
+    const containNumbers: boolean = /[0-9]/g.test(password)
+
+    return (validLength && containNumbers) ;
+}
