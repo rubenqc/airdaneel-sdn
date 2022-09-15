@@ -7,7 +7,10 @@ const config: Config.InitialOptions = {
     },
     testRegex: '(/tests/.*|(\\.|/)(tests|spec))\\.[jt]sx?$',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-    verbose: true
+    verbose: true,
+    collectCoverage: true,
+    collectCoverageFrom: ['<rootDir>/**/*.ts'],
+    coveragePathIgnorePatterns: ["node_modules"]
 }
 
 export default config
