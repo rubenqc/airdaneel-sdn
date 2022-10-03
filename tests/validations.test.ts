@@ -1,7 +1,6 @@
 //import {validations} from "../utils";
 import {isValidEmail, isValidPassword} from "../utils/validations";
 
-
 export {}
 
 describe('Validaciones Email y Password para el Registro',() => {
